@@ -188,11 +188,17 @@ def im_detect_batch(net, imgs, boxes=None):
     if cfg.TEST.HAS_RPN:
         im_blob = blobs['data']
         batch_size = blobs['data'].shape[0]
+        '''Assuming all images have the same scale '''
+        '''
         im_infos = []
+
         for i in xrange(batch_size):
             im_infos.append( np.array([[im_blob.shape[2], im_blob.shape[3], im_scales[i]]], dtype=np.float32))
+        '''
+        im_info = np.array([[im_blob.shape[2], im_blob.shape[3], im_scales[0]]], dtype=np.float32)
+        blobs['im_info'] = im_info
         #print blobs['im_info'].shape (1, 3), blobs['im_info'] #  [[  600.  1000.     2.]]
-        blobs['im_info'] = np.array(im_infos)
+        #blobs['im_info'] = np.array(im_infos)
 
     # reshape network inputs
     # print blobs['data'].shape # (1, 3, 600, 1000)
@@ -217,16 +223,22 @@ def im_detect_batch(net, imgs, boxes=None):
     dividers = []
     boxes = []
     if cfg.TEST.HAS_RPN:
-        assert len(im_scales) == len(imgs), "Only scale per image"
+        assert len(im_scales) == len(imgs), "Only one scale per image"
         rois = net.blobs['rois'].data.copy()
-        
-        for idx in xrange(1, im_scales.shape[0]):
-            dividers += [np.searchsorted(rois[:, 0], idx, 'left')]
+        #print rois[:,0]
 
+        for idx in xrange( im_scales.shape[0] - 1):
+            dividers += [np.searchsorted(rois[:, 0], idx + 1, 'left')]
+
+        #print rois[dividers[0]] next starting line
+        #print dividers
         # unscale back to raw image space
         #boxes = rois[:, 1:5] / im_scales[0]
         boxes = np.split(rois[:, 1:5], dividers)
-    
+        # unscale back to raw image space
+        for idx in xrange(len(imgs)):
+            boxes[idx] = boxes[idx] / im_scales[0]
+     
     if cfg.TEST.SVM: # false
         # use the raw scores before softmax under the assumption they
         # were trained as linear SVMs
