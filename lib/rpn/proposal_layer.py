@@ -77,7 +77,7 @@ class ProposalLayer(caffe.Layer):
             blob = bottom[0].data[idx]
             scores = np.array(blob[self._num_anchors:, :, :], ndmin=4)
             bbox_deltas = np.array(bottom[1].data[idx], ndmin=4)
-            im_info = np.array(bottom[2].data[idx, :], ndmin = 2)[0]
+            im_info = np.array(bottom[2].data[0,:], ndmin = 2)[0]
 
             if DEBUG:
                 print 'im_size: ({}, {})'.format(im_info[0], im_info[1])
