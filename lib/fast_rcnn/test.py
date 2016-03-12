@@ -218,7 +218,8 @@ def im_detect_batch(net, imgs, boxes=None):
     tic = time.time()
     blobs_out = net.forward(**forward_kwargs)
     toc = time.time()
-    print 'time:', toc-tic
+    forward_time = toc - tic
+    #print 'time:', toc-tic
 
     dividers = []
     boxes = []
@@ -264,7 +265,7 @@ def im_detect_batch(net, imgs, boxes=None):
         scores = scores[inv_index, :]
         pred_boxes = pred_boxes[inv_index, :]
 
-    return scores, pred_boxes
+    return scores, pred_boxes, forward_time
 
 
 def im_detect(net, im, boxes=None):
