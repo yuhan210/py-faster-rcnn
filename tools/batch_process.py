@@ -76,19 +76,17 @@ def batch_demo(net, img_names):
     # Load the demo image
     ims = []
     for image_name in img_names:
-        im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
-        im = cv2.imread(im_file)
+        #im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
+        im = cv2.imread(image_name)
         ims += [im] 
     # Detect all object classes and regress object bounds
-    timer = Timer()
-    timer.tic()
-    scores, boxes = im_detect_batch(net, ims)
+    scores, boxes, batch_forward_time = im_detect_batch(net, ims)
     #scores, boxes = im_detect(net, im)
-    timer.toc()
-    print ('Detection took {:.3f}s for '
-           '{:d} object proposals').format(timer.total_time, boxes[0].shape[0])
-    print timer.total_time/float(len(img_names))
+    #print ('Detection took {:.3f}s for '
+    #       '{:d} object proposals').format(timer.total_time, boxes[0].shape[0])
+    #print timer.total_time/float(len(img_names))
     # Visualize detections for each class
+    '''
     CONF_THRESH = 0.8
     NMS_THRESH = 0.3
     for idx, im in enumerate(ims):
@@ -101,7 +99,8 @@ def batch_demo(net, img_names):
             keep = nms(dets, NMS_THRESH)
             dets = dets[keep, :]
             vis_detections(im, cls, dets, thresh=CONF_THRESH)
-    return timer.total_time
+    '''
+    return batch_forward_time
 
 def demo(net, im):
     """Detect object classes in an image using pre-computed object proposals."""
@@ -141,7 +140,7 @@ def parse_args():
                         help='Use CPU mode (overrides --gpu)',
                         action='store_true')
     parser.add_argument('--net', dest='demo_net', help='Network to use [vgg16]',
-                        choices=NETS.keys(), default='vgg16')
+                        choices=NETS.keys(), default='zf')
 
     args = parser.parse_args()
 
@@ -161,15 +160,14 @@ if __name__ == '__main__':
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
                        'fetch_faster_rcnn_models.sh?').format(caffemodel))
 
-    if args.cpu_mode:
-        caffe.set_mode_cpu()
-    else:
-        caffe.set_mode_gpu()
-        caffe.set_device(args.gpu_id)
-        cfg.GPU_ID = args.gpu_id
+    #if args.cpu_mode:
+    #    caffe.set_mode_cpu()
+    #else:
+    caffe.set_mode_gpu()
+    caffe.set_device(args.gpu_id)
+    cfg.GPU_ID = args.gpu_id
 
     print prototxt, caffemodel
-    #exit()
     net = caffe.Net(prototxt, caffemodel, caffe.TEST)
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
@@ -179,10 +177,42 @@ if __name__ == '__main__':
     for i in xrange(2):
         _, _= im_detect(net, im)
 
-    im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
-                '001763.jpg', '004545.jpg']
-    for t in xrange(15):
-        batch_demo(net, im_names)
+    img_folder = '/home/ubuntu/data/imagenet12/test'
+    im_names = [] 
+    for fid, f in enumerate(os.listdir(img_folder)):
+        if fid == 512:
+            break
+        im_names += [os.path.join(img_folder, f)]
+
+    #im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
+    #            '001763.jpg', '004545.jpg']
+    batch_dict = {}  
+    batch_sizes = [1, 2, 4]  
+    for batch_size in batch_sizes:
+        batches = []
+        n_batch = len(im_names)/batch_size
+        for i in xrange(n_batch):
+            cur_batch = im_names[batch_size * i: batch_size * (i+1)] 
+            batches += [cur_batch]
+        batch_dict[batch_size] = batches 
+
+    exec_time_dict = {}
+    for batch_size in batch_sizes:
+        exec_time = []
+        for trail in xrange(10):
+            total_batch_forward_time = 0
+            for batch in batch_dict[batch_size]:
+                #print len(batch)
+                batch_forward_time = batch_demo(net, batch)
+                total_batch_forward_time += batch_forward_time
+
+            ave_img_exectime =  total_batch_forward_time / float(len(im_names))
+            print 'batch_size:', batch_size, ' exectime/batch:', total_batch_forward_time/float(len(batch_dict[batch_size])), 'exectime/img:', ave_img_exectime
+            exec_time += [ave_img_exectime]
+        exec_time_dict[batch_size] = exec_time 
+
+    for batch_size in batch_sizes:
+        print np.mean(exec_time_dict[batch_size]), np.std(exec_time_dict[batch_size])
     '''
     video_path = '/home/ubuntu/videos/14_year_old_girl_playing_guitar_cover_van_halen__eruption_solo_hd_best_quality_fDTm1IzQf-U.mp4'
     cap = cv2.VideoCapture(video_path)
