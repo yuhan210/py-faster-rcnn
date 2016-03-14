@@ -1,0 +1,33 @@
+batch_size: 1  exectime/batch: 2.28285973379 exectime/img: 2.28285973379
+batch_size: 1  exectime/batch: 2.28408361413 exectime/img: 2.28408361413
+batch_size: 1  exectime/batch: 2.28777425596 exectime/img: 2.28777425596
+batch_size: 1  exectime/batch: 2.29027231503 exectime/img: 2.29027231503
+batch_size: 1  exectime/batch: 2.28468422499 exectime/img: 2.28468422499
+batch_size: 1  exectime/batch: 2.28723770846 exectime/img: 2.28723770846
+batch_size: 1  exectime/batch: 2.2815926047 exectime/img: 2.2815926047
+batch_size: 1  exectime/batch: 2.28355119331 exectime/img: 2.28355119331
+batch_size: 1  exectime/batch: 2.28022957174 exectime/img: 2.28022957174
+batch_size: 1  exectime/batch: 2.28293915046 exectime/img: 2.28293915046
+batch_size: 2  exectime/batch: 4.82426799741 exectime/img: 2.4121339987
+batch_size: 2  exectime/batch: 4.84134681523 exectime/img: 2.42067340761
+batch_size: 2  exectime/batch: 4.85154888034 exectime/img: 2.42577444017
+batch_size: 2  exectime/batch: 4.85126032867 exectime/img: 2.42563016433
+batch_size: 2  exectime/batch: 4.86273408961 exectime/img: 2.4313670448
+batch_size: 2  exectime/batch: 4.8518370511 exectime/img: 2.42591852555
+batch_size: 2  exectime/batch: 4.83606221061 exectime/img: 2.41803110531
+batch_size: 2  exectime/batch: 4.84089365136 exectime/img: 2.42044682568
+batch_size: 2  exectime/batch: 4.84319295641 exectime/img: 2.42159647821
+batch_size: 2  exectime/batch: 4.84411847405 exectime/img: 2.42205923703
+batch_size: 4  exectime/batch: 10.7596627865 exectime/img: 2.68991569662
+batch_size: 4  exectime/batch: 11.0991467927 exectime/img: 2.77478669817
+batch_size: 4  exectime/batch: 11.0973126367 exectime/img: 2.77432815917
+batch_size: 4  exectime/batch: 11.1080925949 exectime/img: 2.77702314872
+batch_size: 4  exectime/batch: 11.0969285686 exectime/img: 2.77423214214
+batch_size: 4  exectime/batch: 11.1345626917 exectime/img: 2.78364067292
+batch_size: 4  exectime/batch: 11.1482848693 exectime/img: 2.78707121732
+batch_size: 4  exectime/batch: 11.1534078587 exectime/img: 2.78835196467
+batch_size: 4  exectime/batch: 11.1335867792 exectime/img: 2.78339669481
+batch_size: 4  exectime/batch: 11.1989082377 exectime/img: 2.79972705944
+2.28452243726 0.00290609989252
+2.42236312274 0.00496619496837
+2.7732473454 0.028799970021
